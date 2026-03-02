@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Home</title>
+    <!-- Use Google Fonts to match the sleek UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #f5f5f5;
+            --surface-hover: #efefef;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-radius-lg: 24px;
+            --border-radius-sm: 12px;
+            --accent-color: #4a7c9e;
+            --border-color: #e0e0e0;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--surface-color);
+            padding: 15px 10px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-icon {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .sidebar-icon:hover {
+            color: var(--text-primary);
+            background-color: var(--surface-hover);
+        }
+
+        /* Settings Icon (Bottom Left) */
+        .settings-btn {
+            position: fixed;
+            left: 30px;
+            bottom: 30px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Main Container layout */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Top Widgets (Weather & Clock) */
+        .top-widgets {
+            position: absolute;
+            top: 40px;
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .weather-widget {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weather-location {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .weather-hl {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .clock-face {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .clock-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: var(--text-primary);
+            border-radius: 2px;
+        }
+
+        .hour-hand {
+            width: 3px;
+            height: 20px;
+            transform: rotate(45deg);
+        }
+
+        .min-hand {
+            width: 2px;
+            height: 30px;
+            transform: rotate(180deg);
+        }
+
+        .sec-hand {
+            width: 1px;
+            height: 35px;
+            background-color: #ff5555;
+            transform: rotate(270deg);
+        }
+
+        .digital-time {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Center Content Container */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+            z-index: 10;
+        }
+
+        /* Greeting */
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            width: 100%;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: border 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(74, 124, 158, 0.15);
+        }
+
+        .search-icon {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 15px;
+            color: var(--text-secondary);
+        }
+
+        .search-actions i {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .search-actions i:hover {
+            color: var(--text-primary);
+        }
+
+        /* Privacy Banner */
+        .privacy-banner {
+            margin-top: 25px;
+            background-color: #e8f0f8;
+            color: #4a7c9e;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: 1px solid #c5dce8;
+        }
+
+        .privacy-banner i.fa-xmark {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        /* Bottom Widgets Area */
+        .bottom-widgets {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .invite-btn {
+            background-color: var(--surface-color);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .invite-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .news-widget {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius-sm);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 350px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .news-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .news-content p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .news-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            flex-shrink: 0;
+            margin-left: 15px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- Top Widgets -->
+    <div class="top-widgets">
+        <div class="weather-widget">
+            <div class="weather-location">Coimbatore</div>
+            <div class="weather-main">
+                34°c <i class="fa-solid fa-cloud-sun"></i>
+            </div>
+            <div class="weather-hl">34° 22°</div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="main-container">
+
+        <div class="center-content">
+            <div class="greeting">Good afternoon, surendra</div>
+
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search, type a URL, reference a tab using @, or just ask Neo">
+                <div class="search-actions">
+                    <i class="fa-solid fa-plus"></i>
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+            </div>
+
+            <div class="privacy-banner">
+                <i class="fa-solid fa-lock"></i> Your privacy matters <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+
+        <!-- Bottom Widgets -->
+        <div class="bottom-widgets">
+            <button class="invite-btn">
+                <i class="fa-regular fa-envelope"></i> Invite friends
+            </button>
+
+            <div class="news-widget">
+                <div class="news-content">
+                    <h4>News for you</h4>
+                    <p>'I'm homeless in Dubai after wrongful arrest - I'm banned from leaving'</p>
+                </div>
+                <div class="news-image">
+                    <!-- Placeholder color for image -->
+                    <div style="width:100%; height:100%; background:linear-gradient(45deg, #a88beb, #f8ceec);"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
