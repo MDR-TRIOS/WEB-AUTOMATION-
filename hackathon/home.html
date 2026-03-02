@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Home</title>
+    <!-- Use Google Fonts to match the sleek UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --surface-color: rgba(255, 255, 255, 0.9);
+            --surface-hover: rgba(245, 245, 245, 0.95);
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --border-radius-lg: 32px;
+            --border-radius-sm: 16px;
+            --accent-color: #333333;
+            --accent-gradient: linear-gradient(90deg, #555555 0%, #111111 100%);
+            --border-color: #e0e0e0;
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 28px 18px 28px 18px;
+            border-radius: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), 0 1.5px 0 0 rgba(0, 0, 0, 0.1) inset;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(20px) saturate(1.2);
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+
+        .sidebar-icon {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: all 0.22s cubic-bezier(.4, 2, .6, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-icon::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            opacity: 0.1;
+            transform: translate(-50%, -50%) scale(0.5);
+            transition: width 0.3s, height 0.3s, opacity 0.3s;
+            z-index: 0;
+        }
+
+        .sidebar-icon:hover {
+            color: #fff;
+            background: var(--text-primary);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--text-primary);
+        }
+
+        .sidebar-icon:hover::after {
+            width: 120%;
+            height: 120%;
+            opacity: 0.2;
+            transform: scale(0.96) rotate(-2deg);
+        }
+
+        /* Settings Icon (Bottom Left) */
+        .settings-btn {
+            position: fixed;
+            left: 30px;
+            bottom: 30px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.3rem;
+            background: var(--surface-color);
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .settings-btn:hover {
+            color: #fff;
+            background: var(--text-primary);
+        }
+
+        /* Main Container layout */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            background: var(--bg-color);
+            padding-top: 70px;
+        }
+
+        /* Top Widgets (Weather & Clock) */
+        .top-widgets {
+            position: absolute;
+            top: 40px;
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 2;
+        }
+
+        .weather-widget {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-color);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+        }
+
+        .weather-location {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .weather-hl {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            background: var(--surface-color);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+        }
+
+        .clock-face {
+            width: 80px;
+            height: 80px;
+            border: 2.5px solid var(--accent-color);
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 10px;
+            background: var(--surface-hover);
+        }
+
+        .clock-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: var(--text-primary);
+            border-radius: 2px;
+        }
+
+        .hour-hand {
+            width: 3px;
+            height: 20px;
+            transform: rotate(45deg);
+        }
+
+        .min-hand {
+            width: 2px;
+            height: 30px;
+            transform: rotate(180deg);
+        }
+
+        .sec-hand {
+            width: 1px;
+            height: 35px;
+            background-color: #000000;
+            transform: rotate(270deg);
+        }
+
+        .digital-time {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Center Content Container */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+            z-index: 10;
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            padding: 40px 32px 32px 32px;
+        }
+
+        /* Greeting */
+        .greeting {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Search Bar */
+        .search-container {
+            width: 100%;
+            background: var(--surface-hover);
+            border-radius: var(--border-radius-lg);
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--accent-color);
+            transition: border 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: #7f53ac;
+            box-shadow: 0 10px 30px rgba(127, 83, 172, 0.15);
+        }
+
+        .search-icon {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            font-weight: 600;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 15px;
+            color: var(--text-secondary);
+        }
+
+        .search-actions i {
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .search-actions i:hover {
+            color: #fff;
+            background: var(--text-primary);
+        }
+
+        /* Privacy Banner */
+        .privacy-banner {
+            margin-top: 25px;
+            background: #111111;
+            color: #fff;
+            border-radius: 24px;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .privacy-banner i.fa-xmark {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        /* Bottom Widgets Area */
+        .bottom-widgets {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 2;
+        }
+
+        .invite-btn {
+            background: #111111;
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .invite-btn:hover {
+            background: #333333;
+            color: #fff;
+        }
+
+        .news-widget {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-sm);
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 370px;
+            border: none;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .news-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .news-content p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .news-image {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            background: #e0e0e0;
+            flex-shrink: 0;
+            margin-left: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(127, 83, 172, 0.08);
+            z-index: 100;
+        }
+
+        .navbar-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .forms-btn {
+            background: #111111;
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .forms-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+            background: #333333;
+        }
+
+        .forms-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 101;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(127, 83, 172, 0.25);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-modal {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-color);
+        }
+
+        .modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: var(--surface-hover);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            background: #111111;
+            color: #fff;
+            border-color: #111111;
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .option-btn i {
+            font-size: 1.3rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal-message {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Navbar -->
+    <div class="top-navbar">
+        <div class="navbar-title">📋 My Dashboard</div>
+        <div class="navbar-buttons">
+            <button class="forms-btn" id="formsBtn">
+                <i class="fa-solid fa-clipboard"></i>
+                <span>📝 Forms</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Forms Modal -->
+    <div id="formsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Google Forms</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-options">
+                <button class="option-btn" id="autofillBtn">
+                    <i class="fa-solid fa-magic"></i>
+                    <span>AutoFill Form with Sample Data</span>
+                </button>
+                <button class="option-btn" id="openFormBtn">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                    <span>Open Form Manually</span>
+                </button>
+            </div>
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+            <div id="modalMessage" class="modal-message" style="display: none;"></div>
+
+            <!-- Data Preview Section (initially hidden) -->
+            <div id="dataPreview"
+                style="display: none; margin-top: 25px; padding-top: 25px; border-top: 2px solid var(--border-color);">
+                <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--text-secondary);">📊 Sample Data Preview:
+                </h3>
+                <div id="dataPreviewContent"
+                    style="background: var(--surface-hover); border-radius: 12px; padding: 15px; font-size: 0.9rem; color: var(--text-primary); line-height: 1.8;">
+                    <!-- Data will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="main-container">
+
+        <div class="center-content">
+            <div class="greeting">Good Evening </div>
+
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search, type a URL, reference a tab using @, or just ask Neo">
+                <div class="search-actions">
+                    <i class="fa-solid fa-plus"></i>
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+            </div>
+
+            <div class="privacy-banner">
+                <i class="fa-solid fa-lock"></i> Your privacy matters <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Form Data for Autofill
+        const formData = {
+            name: "Surendra Purohit",
+            email: "surendra.purohit@example.com",
+            address: "45, MG Road, Chennai, Tamil Nadu, India",
+            phone: "9123456780",
+            college: "XYZ Institute of Technology",
+            dept: "Information Technology",
+            option: "Option 1"
+        };
+
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdNV2pI7jglx3rWn0Prq4VQuFU-nZxim9zc_y9RpX35QGEpZg/viewform";
+
+        // Modal Elements
+        const formsBtn = document.getElementById('formsBtn');
+        const formsModal = document.getElementById('formsModal');
+        const closeModal = document.getElementById('closeModal');
+        const autofillBtn = document.getElementById('autofillBtn');
+        const openFormBtn = document.getElementById('openFormBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const modalMessage = document.getElementById('modalMessage');
+        const dataPreview = document.getElementById('dataPreview');
+        const dataPreviewContent = document.getElementById('dataPreviewContent');
+
+        // Populate Data Preview
+        function populateDataPreview() {
+            let htmlContent = '';
+
+            // Create a more readable preview
+            const dataDisplay = [
+                { label: '👤 Name', value: formData.name },
+                { label: '📧 Email', value: formData.email },
+                { label: '📍 Address', value: formData.address },
+                { label: '📱 Phone Number', value: formData.phone },
+                { label: '🎓 College', value: formData.college },
+                { label: '📚 Department', value: formData.dept },
+                { label: '✅ Option', value: formData.option }
+            ];
+
+            dataDisplay.forEach(item => {
+                htmlContent += `
+                    <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <strong>${item.label}:</strong>
+                        <span style="color: #ff5e62; font-weight: 500;">${item.value}</span>
+                    </div>
+                `;
+            });
+
+            dataPreviewContent.innerHTML = htmlContent;
+        }
+
+        // Initial population
+        populateDataPreview();
+
+        // Open Modal
+        formsBtn.addEventListener('click', () => {
+            formsModal.classList.add('show');
+            resetModal();
+            // Show data preview
+            setTimeout(() => {
+                dataPreview.style.display = 'block';
+            }, 300);
+        });
+
+        // Close Modal
+        closeModal.addEventListener('click', () => {
+            formsModal.classList.remove('show');
+            dataPreview.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        formsModal.addEventListener('click', (e) => {
+            if (e.target === formsModal) {
+                formsModal.classList.remove('show');
+                dataPreview.style.display = 'none';
+            }
+        });
+
+        // Reset Modal
+        function resetModal() {
+            loadingSpinner.style.display = 'none';
+            modalMessage.style.display = 'none';
+            modalMessage.textContent = '';
+            autofillBtn.disabled = false;
+            openFormBtn.disabled = false;
+        }
+
+        // Open Form Manually
+        openFormBtn.addEventListener('click', () => {
+            // Open the form immediately (synchronously to avoid popup blockers)
+            const opened = window.open(FORM_URL, '_blank');
+
+            if (!opened) {
+                alert('❌ Popup blocked! Please allow popups for this site.');
+                return;
+            }
+
+            // Show success message
+            loadingSpinner.style.display = 'none';
+            modalMessage.style.display = 'block';
+            modalMessage.textContent = '✅ Form opened! Fill it out and submit.';
+
+            // Close modal after a brief delay so user sees the message
+            setTimeout(() => {
+                formsModal.classList.remove('show');
+                dataPreview.style.display = 'none';
+                modalMessage.textContent = '';
+                loadingSpinner.style.display = 'none';
+            }, 2000);
+        });
+
+        // Autofill Form
+        autofillBtn.addEventListener('click', () => {
+            // Generate the prefilled URL immediately
+            const prefilledUrl = generatePrefilledUrl(FORM_URL, formData);
+
+            // Open the form IMMEDIATELY (before any delays)
+            // This must happen synchronously to avoid popup blockers
+            const opened = window.open(prefilledUrl, '_blank');
+
+            if (!opened) {
+                // Popup was blocked
+                loadingSpinner.style.display = 'none';
+                modalMessage.style.display = 'block';
+                modalMessage.textContent = '❌ Popup blocked! Please allow popups for this site and try again.';
+                return;
+            }
+
+            // Now show loading message
+            loadingSpinner.style.display = 'block';
+            modalMessage.style.display = 'block';
+            modalMessage.textContent = '✅ Form opened in a new tab!';
+            autofillBtn.disabled = true;
+            openFormBtn.disabled = true;
+
+            // Show success message
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+                modalMessage.textContent = '✅ Fill in the prefilled form and submit!\n\n💡 Tip: For full automation, use: python form_autofill_helper.py selenium';
+
+                // Re-enable buttons after user can read message
+                setTimeout(() => {
+                    autofillBtn.disabled = false;
+                    openFormBtn.disabled = false;
+                }, 3000);
+            }, 500);
+        });
+
+        // Generate Prefilled URL
+        function generatePrefilledUrl(baseUrl, data) {
+            // These are common field patterns used in Google Forms
+            // Note: URL-based prefilling is limited by Google Forms security
+
+            let url = baseUrl;
+
+            // Try multiple common field name patterns
+            const fieldMappings = [
+                { key: 'entry.Name', value: data.name },
+                { key: 'entry.Email', value: data.email },
+                { key: 'entry.Address', value: data.address },
+                { key: 'entry.Phone', value: data.phone },
+                { key: 'entry.College', value: data.college },
+                { key: 'entry.Department', value: data.dept },
+                { key: 'entry.Option', value: data.option }
+            ];
+
+            url += '?usp=pp_url';
+
+            fieldMappings.forEach(mapping => {
+                url += `&${encodeURIComponent(mapping.key)}=${encodeURIComponent(mapping.value)}`;
+            });
+
+            return url;
+        }
+
+        // Keyboard shortcut: Press Escape to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && formsModal.classList.contains('show')) {
+                formsModal.classList.remove('show');
+                dataPreview.style.display = 'none';
+            }
+        });
+
+        // Show helpful tooltips on hover
+        autofillBtn.addEventListener('mouseenter', function () {
+            const tooltip = document.createElement('div');
+            tooltip.style.cssText = `
+                position: fixed;
+                background: linear-gradient(90deg, #ffb347 0%, #ff5e62 100%);
+                color: white;
+                padding: 10px 14px;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                z-index: 1002;
+                box-shadow: 0 4px 12px rgba(255,94,98,0.25);
+                white-space: nowrap;
+                bottom: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                pointer-events: none;
+            `;
+            tooltip.textContent = '🔗 Uses Google Forms URL prefilling (limited by Google security)';
+            document.body.appendChild(tooltip);
+
+            setTimeout(() => {
+                tooltip.remove();
+            }, 3000);
+        });
+
+        openFormBtn.addEventListener('mouseenter', function () {
+            const tooltip = document.createElement('div');
+            tooltip.style.cssText = `
+                position: fixed;
+                background: linear-gradient(90deg, #ffb347 0%, #ff5e62 100%);
+                color: white;
+                padding: 10px 14px;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                z-index: 1002;
+                box-shadow: 0 4px 12px rgba(255,94,98,0.25);
+                white-space: nowrap;
+                bottom: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                pointer-events: none;
+            `;
+            tooltip.textContent = '📝 Opens form for manual filling - you control all entries';
+            document.body.appendChild(tooltip);
+
+            setTimeout(() => {
+                tooltip.remove();
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>

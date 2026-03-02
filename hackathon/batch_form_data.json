@@ -1,0 +1,68 @@
+[
+  {
+    "full_name": {
+      "type": "text",
+      "value": "Alice Johnson"
+    },
+    "email": {
+      "type": "text",
+      "value": "alice@example.com"
+    },
+    "feedback": {
+      "type": "paragraph",
+      "value": "Excellent service and user experience."
+    },
+    "rating": {
+      "type": "multiple_choice",
+      "value": "5 Stars"
+    },
+    "would_recommend": {
+      "type": "checkbox",
+      "values": ["Yes"]
+    }
+  },
+  {
+    "full_name": {
+      "type": "text",
+      "value": "Bob Wilson"
+    },
+    "email": {
+      "type": "text",
+      "value": "bob@example.com"
+    },
+    "feedback": {
+      "type": "paragraph",
+      "value": "Good overall, could improve documentation."
+    },
+    "rating": {
+      "type": "multiple_choice",
+      "value": "4 Stars"
+    },
+    "would_recommend": {
+      "type": "checkbox",
+      "values": ["Yes"]
+    }
+  },
+  {
+    "full_name": {
+      "type": "text",
+      "value": "Carol Davis"
+    },
+    "email": {
+      "type": "text",
+      "value": "carol@example.com"
+    },
+    "feedback": {
+      "type": "paragraph",
+      "value": "Feature-rich platform, just needs better onboarding."
+    },
+    "rating": {
+      "type": "multiple_choice",
+      "value": "4 Stars"
+    },
+    "would_recommend": {
+      "type": "checkbox",
+      "values": ["Yes"]
+    }
+  }
+]

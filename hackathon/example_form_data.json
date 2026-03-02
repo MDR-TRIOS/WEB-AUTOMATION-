@@ -1,0 +1,34 @@
+{
+  "full_name": {
+    "type": "text",
+    "value": "Jane Smith"
+  },
+  "email": {
+    "type": "text",
+    "value": "jane.smith@example.com"
+  },
+  "phone": {
+    "type": "text",
+    "value": "+1-555-0123"
+  },
+  "message": {
+    "type": "paragraph",
+    "value": "This is a sample paragraph response.\nIt can span multiple lines.\nGreat for detailed feedback."
+  },
+  "preferred_contact": {
+    "type": "multiple_choice",
+    "value": "Email"
+  },
+  "interests": {
+    "type": "checkbox",
+    "values": ["Technology", "Design", "Marketing"]
+  },
+  "country": {
+    "type": "dropdown",
+    "value": "United States"
+  },
+  "state": {
+    "type": "dropdown",
+    "value": "California"
+  }
+}
